@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TowerNet: Packet-Protocol</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="towernet.css">
+</head>
+<body>
+<div class="scan-line"></div>
+
+<!-- LOADING SCREEN -->
+<div class="screen" id="loadingScreen">
+  <div class="load-logo">TOWERNET</div>
+  <div class="load-sub">PACKET-PROTOCOL / OSI DEFENSE SYSTEM</div>
+  <div class="load-bar-wrap"><div class="load-bar" id="loadBar"></div></div>
+  <div class="load-status" id="loadStatus">INITIALIZING NETWORK STACK...</div>
+</div>
+
+<!-- WELCOME SCREEN -->
+<div class="screen hidden" id="welcomeScreen">
+  <div class="welcome-grid"></div>
+  <div class="welcome-content">
+    <div class="welcome-title">
+      <span>⬡ PACKET-PROTOCOL</span>
+      TOWERNET
+    </div>
+    <div class="welcome-desc">
+      <strong>Defend the central server</strong> against waves of malicious data packets.<br>
+      Deploy OSI-layer security towers to intercept, inspect, and destroy incoming threats.<br>
+      Each tower represents a real network defense protocol.
+    </div>
+    <div class="osi-pills">
+      <div class="osi-pill" style="border-color:#00e5ff;color:#00e5ff;">Layer 2 · IDS</div>
+      <div class="osi-pill" style="border-color:#00ccff;color:#00ccff;">Layer 3 · Router</div>
+      <div class="osi-pill" style="border-color:#ff6600;color:#ff6600;">Layer 4 · Firewall</div>
+      <div class="osi-pill" style="border-color:#ff3399;color:#ff3399;">Layer 7 · Antivirus</div>
+    </div>
+    <button class="btn" onclick="showUsername()">DEPLOY DEFENSES</button>
+    <button class="btn purple" onclick="showHowToPlay()">HOW TO PLAY</button>
+  </div>
+</div>
+
+<!-- USERNAME SCREEN -->
+<div class="screen hidden" id="usernameScreen">
+  <div class="username-box">
+    <div class="username-label">IDENTIFY OPERATOR</div>
+    <div class="username-hint">ENTER CALLSIGN TO INITIALIZE SESSION</div>
+    <input class="username-input" id="usernameInput" type="text" placeholder="OPERATOR_NAME" maxlength="16" autocomplete="off">
+    <div class="username-error" id="usernameError"></div>
+    <br><br>
+    <button class="btn" onclick="startGame()">INITIALIZE SYSTEM</button>
+  </div>
+</div>
+
+<!-- GAME WRAPPER -->
+<div id="gameWrapper" class="screen hidden">
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-item">
+      <span class="hud-icon">📡</span>
+      <div>
+        <div class="hud-label">OPERATOR</div>
+        <div class="hud-value" id="playerName" style="color:#00e5ff;font-size:0.75rem;">---</div>
+      </div>
+    </div>
+    <div class="hud-sep"></div>
+    <div class="hud-item">
+      <span class="hud-icon">🌊</span>
+      <div>
+        <div class="hud-label">WAVE</div>
+        <div class="hud-value" id="waveDisplay" style="color:#7b2fff;">1 / 10</div>
+      </div>
+    </div>
+    <div class="hud-sep"></div>
+    <div class="hud-item">
+      <div>
+        <div class="hud-label">SERVER INTEGRITY</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:3px;">
+          <div id="healthBar"><div id="healthFill"></div></div>
+          <div class="hud-value" id="healthVal" style="color:#00ff88;font-size:0.75rem;">100%</div>
+        </div>
+      </div>
+    </div>
+    <div class="hud-sep"></div>
+    <div class="hud-item">
+      <span class="hud-icon">💰</span>
+      <div>
+        <div class="hud-label">COINS</div>
+        <div class="hud-value" id="coinsVal">150</div>
+      </div>
+    </div>
+    <div class="hud-sep"></div>
+    <div class="hud-item" style="margin-left:auto;">
+      <button id="speedBtn" onclick="toggleSpeed()">2× SPEED</button>
+    </div>
+  </div>
+
+  <!-- MAIN AREA -->
+  <div id="gameMain">
+    <div id="canvasWrap">
+      <canvas id="gameCanvas"></canvas>
+      <canvas id="hovOverlay"></canvas>
+      <div id="waveWarning">
+        <div class="wave-warning-box">
+          <div class="wave-warning-kicker">WARNING</div>
+          <div class="wave-warning-title" id="waveWarningTitle">INCOMING WAVE</div>
+          <div class="wave-warning-sub" id="waveWarningSub">Threat signature detected</div>
+        </div>
+      </div>
+      <div id="osiTooltip">
+        <div class="ott" id="ottTitle"></div>
+        <div class="otd" id="ottDesc"></div>
+        <div class="otl" id="ottLayer"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div id="rightPanel">
+      <div class="panel-section">
+        <div class="panel-title">⚡ DEPLOY TOWER</div>
+        <div class="tower-btn" id="tbtn-router" onclick="selectTower('router')" onmouseenter="showTowerInfo('router')" onmouseleave="hideTowerInfo()">
+          <div class="tower-icon" style="background:#001a30;border:1px solid #00ccff;">🌐</div>
+          <div class="tower-info">
+            <div class="tower-name">ROUTER</div>
+            <div class="tower-layer">Network · Layer 3</div>
+            <div class="tower-cost">⚡ 50 coins</div>
+          </div>
+        </div>
+        <div class="tower-btn" id="tbtn-firewall" onclick="selectTower('firewall')" onmouseenter="showTowerInfo('firewall')" onmouseleave="hideTowerInfo()">
+          <div class="tower-icon" style="background:#2a0a00;border:1px solid #ff6600;">🔥</div>
+          <div class="tower-info">
+            <div class="tower-name">FIREWALL</div>
+            <div class="tower-layer">Transport · Layer 4</div>
+            <div class="tower-cost">⚡ 75 coins</div>
+          </div>
+        </div>
+        <div class="tower-btn" id="tbtn-ids" onclick="selectTower('ids')" onmouseenter="showTowerInfo('ids')" onmouseleave="hideTowerInfo()">
+          <div class="tower-icon" style="background:#1a0030;border:1px solid #9900ff;">🛡️</div>
+          <div class="tower-info">
+            <div class="tower-name">IDS SENSOR</div>
+            <div class="tower-layer">Data Link · Layer 2</div>
+            <div class="tower-cost">⚡ 80 coins</div>
+          </div>
+        </div>
+        <div class="tower-btn" id="tbtn-antivirus" onclick="selectTower('antivirus')" onmouseenter="showTowerInfo('antivirus')" onmouseleave="hideTowerInfo()">
+          <div class="tower-icon" style="background:#2a0020;border:1px solid #ff3399;">🦠</div>
+          <div class="tower-info">
+            <div class="tower-name">ANTIVIRUS</div>
+            <div class="tower-layer">Application · Layer 7</div>
+            <div class="tower-cost">⚡ 100 coins</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected tower actions -->
+      <div class="panel-section" id="towerActions" style="display:none;">
+        <div class="panel-title">⚙ SELECTED TOWER</div>
+        <div id="selectedInfo" style="font-size:0.6rem;color:#3a6080;line-height:1.6;margin-bottom:8px;"></div>
+        <div class="action-row">
+          <button class="act-btn" id="upgradeBtn" onclick="upgradeTower()">⬆ UPGRADE</button>
+          <button class="act-btn danger" id="sellBtn" onclick="sellTower()">$ SELL</button>
+        </div>
+      </div>
+
+      <div class="panel-section" id="infoPanel">
+        <div class="info-title panel-title">📡 TOWER INFO</div>
+        <div id="infoContent"><span style="color:#1a3a50;">Tap or hover a tower to see OSI layer details...</span></div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">📋 SYSTEM LOG</div>
+        <div id="logPanel">
+          <ul id="logList"></ul>
+        </div>
+      </div>
+
+      <button id="startWaveBtn" onclick="startWave()">▶ LAUNCH WAVE 1</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="hidden">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle">VICTORY</div>
+    <div class="modal-sub" id="modalSub"></div>
+    <div class="modal-stats" id="modalStats"></div>
+    <button class="btn" onclick="restartGame()">⟳ RESTART</button>
+  </div>
+</div>
+
+<script src="towernet.js"></script>
+</body>
+</html>
