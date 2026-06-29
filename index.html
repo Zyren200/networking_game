@@ -13,11 +13,15 @@
   <div class="logo-wrap">
     <span class="logo-top">TOWERNET</span>
     <span class="logo-bot">PACKET-PROTOCOL</span>
+    <div id="player-badge" aria-live="polite">
+      <div class="pb-lbl">PLAYER:</div>
+      <div class="pb-name" id="tb-player">GUEST</div>
+    </div>
   </div>
   <div class="tb-div"></div>
   <div class="tb-block">
     <div class="tb-lbl">WAVE</div>
-    <div class="tb-val" id="tb-wave">1 / 7</div>
+    <div class="tb-val" id="tb-wave">1 / 10</div>
   </div>
   <div class="tb-div"></div>
   <div class="tb-lbl" style="font-size:9px;color:#5a8aaa;letter-spacing:1px;font-family:'Share Tech Mono',monospace;margin-right:8px">PREPARATION TIME</div>
@@ -66,59 +70,52 @@
     <div class="pkt-row enemy-list">
       <div class="pkt-card">
         <span class="pkt-art">📡</span>
-        <div class="pkt-name" style="color:#aaaaaa">SIGNAL INTERFERENCE</div>
-        <div class="pkt-lyr" style="color:#888">LAYER 1 · GRAY</div>
+        <div class="pkt-name" style="color:#aaaaaa">PHYSICAL</div>
+        <div class="pkt-lyr" style="color:#888">LAYER 1 - PHYSICAL</div>
         <div class="pkt-stat-row"><span>HP: <b style="color:#c8e0f4">40</b></span><span>SPD: <b style="color:#c8e0f4">MED</b></span></div>
-        <div class="pkt-stat-row"><span>Slows towers</span><span></span></div>
+        <div class="pkt-stat-row"><span>Weakest opener</span><span></span></div>
       </div>
       <div class="pkt-card">
         <span class="pkt-art">👻</span>
-        <div class="pkt-name" style="color:#4488ff">STEALTH PACKET</div>
-        <div class="pkt-lyr" style="color:#2266cc">LAYER 2 · BLUE</div>
-        <div class="pkt-stat-row"><span>HP: <b style="color:#c8e0f4">50</b></span><span>SPD: <b style="color:#c8e0f4">FAST</b></span></div>
-        <div class="pkt-stat-row"><span>Invisible</span><span></span></div>
+        <div class="pkt-name" style="color:#4488ff">DATA LINK</div>
+        <div class="pkt-lyr" style="color:#2266cc">LAYER 2 - DATA LINK</div>
+        <div class="pkt-stat-row"><span>HP: <b style="color:#c8e0f4">52</b></span><span>SPD: <b style="color:#c8e0f4">FAST</b></span></div>
+        <div class="pkt-stat-row"><span>Quick and tricky</span><span></span></div>
       </div>
       <div class="pkt-card">
         <span class="pkt-art">🌊</span>
-        <div class="pkt-name" style="color:#00cc55">IP FLOOD PACKET</div>
-        <div class="pkt-lyr" style="color:#009940">LAYER 3 · GREEN</div>
-        <div class="pkt-stat-row"><span>HP: <b style="color:#c8e0f4">80</b></span><span>SPD: <b style="color:#c8e0f4">MED</b></span></div>
-        <div class="pkt-stat-row"><span>Targets routers</span><span></span></div>
+        <div class="pkt-name" style="color:#00cc55">NETWORK</div>
+        <div class="pkt-lyr" style="color:#009940">LAYER 3 - NETWORK</div>
+        <div class="pkt-stat-row"><span>HP: <b style="color:#c8e0f4">78</b></span><span>SPD: <b style="color:#c8e0f4">MED</b></span></div>
+        <div class="pkt-stat-row"><span>Stable mid-tier threat</span><span></span></div>
       </div>
       <div class="pkt-card">
         <span class="pkt-art">💣</span>
-        <div class="pkt-name" style="color:#ff8800">DDOS PACKET</div>
-        <div class="pkt-lyr" style="color:#cc5500">LAYER 4 · ORANGE</div>
-        <div class="pkt-stat-row"><span>HP: <b style="color:#c8e0f4">120</b></span><span>SPD: <b style="color:#c8e0f4">FAST</b></span></div>
-        <div class="pkt-stat-row"><span>Multi-hit burst</span><span></span></div>
+        <div class="pkt-name" style="color:#ff8800">TRANSPORT</div>
+        <div class="pkt-lyr" style="color:#cc5500">LAYER 4 - TRANSPORT</div>
+        <div class="pkt-stat-row"><span>HP: <b style="color:#c8e0f4">104</b></span><span>SPD: <b style="color:#c8e0f4">MED</b></span></div>
+        <div class="pkt-stat-row"><span>Heavy pressure packet</span><span></span></div>
       </div>
       <div class="pkt-card">
         <span class="pkt-art">🕵️</span>
-        <div class="pkt-name" style="color:#9b59b6">SESSION HIJACK</div>
-        <div class="pkt-lyr" style="color:#7a3a9a">LAYER 5 · PURPLE</div>
-        <div class="pkt-stat-row"><span>HP: <b style="color:#c8e0f4">100</b></span><span>SPD: <b style="color:#c8e0f4">MED</b></span></div>
+        <div class="pkt-name" style="color:#9b59b6">SESSION</div>
+        <div class="pkt-lyr" style="color:#7a3a9a">LAYER 5 - SESSION</div>
+        <div class="pkt-stat-row"><span>HP: <b style="color:#c8e0f4">128</b></span><span>SPD: <b style="color:#c8e0f4">SLOW</b></span></div>
         <div class="pkt-stat-row"><span>Disables towers</span><span></span></div>
       </div>
       <div class="pkt-card">
         <span class="pkt-art">🔐</span>
-        <div class="pkt-name" style="color:#00cccc">ENCRYPTION ATTACK</div>
-        <div class="pkt-lyr" style="color:#009999">LAYER 6 · CYAN</div>
-        <div class="pkt-stat-row"><span>HP: <b style="color:#c8e0f4">130</b></span><span>SPD: <b style="color:#c8e0f4">SLOW</b></span></div>
+        <div class="pkt-name" style="color:#00cccc">PRESENTATION</div>
+        <div class="pkt-lyr" style="color:#009999">LAYER 6 - PRESENTATION</div>
+        <div class="pkt-stat-row"><span>HP: <b style="color:#c8e0f4">150</b></span><span>SPD: <b style="color:#c8e0f4">SLOW</b></span></div>
         <div class="pkt-stat-row"><span>Reduces dmg</span><span></span></div>
       </div>
       <div class="pkt-card">
         <span class="pkt-art">🦠</span>
-        <div class="pkt-name" style="color:#ff3355">MALWARE PACKET</div>
-        <div class="pkt-lyr" style="color:#cc1133">LAYER 7 · RED</div>
-        <div class="pkt-stat-row"><span>HP: <b style="color:#c8e0f4">150</b></span><span>SPD: <b style="color:#c8e0f4">SLOW</b></span></div>
-        <div class="pkt-stat-row"><span>Heavy server dmg</span><span></span></div>
-      </div>
-      <div class="pkt-card boss">
-        <span class="pkt-art">💀</span>
-        <div class="pkt-name" style="color:#ff2244">BOSS HACKER</div>
-        <div class="pkt-lyr" style="color:#aa1122">MULTI-LAYER</div>
-        <div class="pkt-stat-row"><span>HP: <b style="color:#c8e0f4">600+</b></span><span>SPD: <b style="color:#c8e0f4">VAR</b></span></div>
-        <div class="pkt-stat-row"><span>Shifts OSI layer</span><span></span></div>
+        <div class="pkt-name" style="color:#ff3355">APPLICATION</div>
+        <div class="pkt-lyr" style="color:#cc1133">LAYER 7 - APPLICATION</div>
+        <div class="pkt-stat-row"><span>HP: <b style="color:#c8e0f4">176</b></span><span>SPD: <b style="color:#c8e0f4">SLOW</b></span></div>
+        <div class="pkt-stat-row"><span>Strongest final threat</span><span></span></div>
       </div>
     </div>
   </div>
@@ -127,10 +124,6 @@
 <!-- ── MAP ── -->
 <div id="mapwrap">
   <canvas id="canvas"></canvas>
-  <div id="player-badge" aria-live="polite">
-    <div class="pb-lbl">OPERATOR</div>
-    <div class="pb-name" id="tb-player">GUEST</div>
-  </div>
   <div id="phase-banner">PREP PHASE</div>
   <div id="map-notifs"></div>
   <div id="wave-done">
@@ -273,7 +266,7 @@
     <div class="ov-sub">PACKET · PROTOCOL</div>
     <div class="ov-desc">
       Defend your <b>Main Server</b> against all 7 OSI layers of attack.<br>
-      Place towers → Connect IPs → Survive 7 waves!<br><br>
+      Place towers → Connect IPs → Survive 10 waves!<br><br>
       <span style="font-size:11px">Layer matching = bonus damage. Layer mismatch = penalty.</span>
     </div>
     <button class="ov-btn" onclick="startGame()">▶ BOOT SYSTEM</button>

@@ -144,25 +144,25 @@ body:not(.game-ready) #app{opacity:0;pointer-events:none}
 #mapwrap{flex:1;display:flex;flex-direction:column;position:relative;background:#05111c;overflow:hidden}
 #canvas{position:absolute;inset:0;width:100%;height:100%}
 #player-badge{
-  position:absolute;top:10px;left:12px;z-index:12;
-  display:none;flex-direction:column;gap:2px;
-  min-width:160px;max-width:230px;
-  padding:10px 12px;
-  background:linear-gradient(180deg,#071522dd,#091b2edd);
-  border:1px solid #1a4a7a;border-radius:12px;
-  box-shadow:0 0 18px #00aaff1a;
-  backdrop-filter:blur(6px);
-  pointer-events:none;
+  display:none;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:1px;
+  margin-top:3px;
+  padding-left:14px;
+  border-left:1px solid #1a3a5c;
+  min-width:0;
+  max-width:180px;
 }
 #player-badge.visible{display:flex}
 .pb-lbl{
   font-family:'Share Tech Mono',monospace;
-  font-size:9px;color:#5a8aaa;letter-spacing:3px;
+  font-size:8px;color:#5a8aaa;letter-spacing:3px;line-height:1;
 }
 .pb-name{
   font-family:'Orbitron',monospace;
-  font-size:15px;font-weight:700;color:#00ff80;
-  letter-spacing:1.5px;text-transform:uppercase;
+  font-size:11px;font-weight:700;color:#00ff80;
+  letter-spacing:1.4px;text-transform:uppercase;line-height:1.1;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   text-shadow:0 0 10px #00ff8022;
 }

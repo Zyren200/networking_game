@@ -1,7 +1,7 @@
 // ══════════════════════════════════════════
 //  CONSTANTS
 // ══════════════════════════════════════════
-const MAX_WAVE = 7;
+const MAX_WAVE = 10;
 const MAX_TOWERS = 10;
 const START_UNLOCKED = new Set(['IDS','Router','Firewall','Antivirus']);
 const UNLOCK_WAVE = {CableShield:3, SessionMonitor:4, EncryptGateway:5};
@@ -16,14 +16,26 @@ const TDEFS = {
   Antivirus:     {layer:7,cost:120,dmg:90, range:75, rate:2.0,icon:'🛡️',artCls:'av-art', col:LCOL[7],lbl:'ANTIVIRUS',      sub:'Malware Detection Engine\nLayer 7 – Application Layer',  locked:false}
 };
 const PDEFS = [
-  {n:'Signal Interference', l:1,hp:40, spd:1.3,col:LCOL[1],icon:'📡',effect:'slow'},
-  {n:'Stealth Packet',     l:2,hp:50, spd:1.9,col:LCOL[2],icon:'👻',effect:'stealth'},
-  {n:'IP Flood Packet',    l:3,hp:80, spd:1.3,col:LCOL[3],icon:'🌊',effect:'none'},
-  {n:'DDoS Packet',        l:4,hp:120,spd:1.2,col:LCOL[4],icon:'💣',effect:'none'},
-  {n:'Session Hijack',     l:5,hp:100,spd:1.0,col:LCOL[5],icon:'🕵️',effect:'disable'},
-  {n:'Encryption Attack',  l:6,hp:130,spd:0.8,col:LCOL[6],icon:'🔐',effect:'weaken'},
-  {n:'Malware Packet',     l:7,hp:150,spd:0.9,col:LCOL[7],icon:'🦠',effect:'heavydmg'},
-  {n:'Boss Hacker',        l:4,hp:600,spd:0.6,col:'#ff2244',icon:'💀',boss:true,effect:'multilayer'}
+  {n:'Physical',           l:1,hp:40, spd:1.2,col:LCOL[1],icon:'📡',effect:'slow'},
+  {n:'Data Link',          l:2,hp:52, spd:1.7,col:LCOL[2],icon:'👻',effect:'stealth'},
+  {n:'Network',            l:3,hp:78, spd:1.3,col:LCOL[3],icon:'🌊',effect:'none'},
+  {n:'Transport',          l:4,hp:104,spd:1.2,col:LCOL[4],icon:'💣',effect:'none'},
+  {n:'Session',            l:5,hp:128,spd:1.0,col:LCOL[5],icon:'🕵️',effect:'disable'},
+  {n:'Presentation',       l:6,hp:150,spd:0.85,col:LCOL[6],icon:'🔐',effect:'weaken'},
+  {n:'Application',        l:7,hp:176,spd:0.95,col:LCOL[7],icon:'🦠',effect:'heavydmg'}
+];
+const PDEFS_BY_NAME=Object.fromEntries(PDEFS.map(p=>[p.n,p]));
+const WAVE_BLUEPRINTS=[
+  {types:['Physical','Physical','Data Link'],count:5,hp:0.78,spawn:2.25},
+  {types:['Physical','Data Link','Data Link','Network'],count:6,hp:0.90,spawn:2.10},
+  {types:['Data Link','Network','Transport'],count:7,hp:1.02,spawn:2.00},
+  {types:['Network','Transport','Session'],count:8,hp:1.14,spawn:1.90},
+  {types:['Transport','Session','Presentation'],count:9,hp:1.27,spawn:1.80},
+  {types:['Session','Presentation','Application'],count:10,hp:1.41,spawn:1.70},
+  {types:['Transport','Session','Presentation','Application'],count:12,hp:1.55,spawn:1.60},
+  {types:['Session','Presentation','Application'],count:14,hp:1.70,spawn:1.50},
+  {types:['Presentation','Application','Application'],count:16,hp:1.88,spawn:1.40},
+  {types:['Presentation','Application','Application','Application'],count:18,hp:2.08,spawn:1.30}
 ];
 
 // ══════════════════════════════════════════
@@ -262,7 +274,7 @@ function ensureHowToPlayOverlay(){
         </div>
         <div class="howto-card">
           <div class="howto-card-title">4. SURVIVE</div>
-          <div class="howto-card-text">Use UPGRADE and SELL during prep time only. Unlock stronger towers as the waves rise, and keep the main server alive through all 7 waves.</div>
+          <div class="howto-card-text">Use UPGRADE and SELL anytime you can afford them. The battle keeps moving, so you can react mid-wave and keep the main server alive through all 10 waves.</div>
         </div>
       </div>
       <div class="howto-tip">
@@ -281,6 +293,37 @@ function syncHowToPlayOverlay(){
   if(!el)return;
   el.classList.toggle('hidden',!document.body.classList.contains('howto-open'));
   el.setAttribute('aria-hidden',document.body.classList.contains('howto-open')?'false':'true');
+}
+
+function speedLabel(spd){
+  if(spd>=1.55)return 'FAST';
+  if(spd<=1.05)return 'SLOW';
+  return 'MED';
+}
+
+function packetNote(pkt){
+  return {
+    Physical:'Weakest opener',
+    'Data Link':'Quick and tricky',
+    Network:'Stable mid-tier threat',
+    Transport:'Heavy pressure packet',
+    Session:'Disables towers',
+    Presentation:'Reduces dmg',
+    Application:'Strongest final threat'
+  }[pkt.n]||'';
+}
+
+function renderEnemyRoster(){
+  const list=document.querySelector('.enemy-list');
+  if(!list)return;
+  list.innerHTML=PDEFS.map(pkt=>`
+      <div class="pkt-card">
+        <span class="pkt-art">${pkt.icon}</span>
+        <div class="pkt-name" style="color:${pkt.col}">${pkt.n.toUpperCase()}</div>
+        <div class="pkt-lyr" style="color:${pkt.col}">LAYER ${pkt.l} · ${pkt.n.toUpperCase()}</div>
+        <div class="pkt-stat-row"><span>HP: <b style="color:#c8e0f4">${pkt.hp}</b></span><span>SPD: <b style="color:#c8e0f4">${speedLabel(pkt.spd)}</b></span></div>
+        <div class="pkt-stat-row"><span>${packetNote(pkt)}</span><span></span></div>
+      </div>`).join('');
 }
 
 function openHowToPlay(){
@@ -474,13 +517,13 @@ function selType(t){
 }
 
 function activatePlace(){
+  if(!S||S.over){mn('System not ready.','dmg');return;}
   const d=TDEFS[S.selType];
   if(d?.locked){
     mn('🔒 Not unlocked!','dmg');
     return;
   }
   if(gamePaused){mn('Game paused. Resume to place towers.','dmg');return;}
-  if(S.phase!=='prep'){mn('Cannot place during wave!','dmg');return;}
   if(S.towers.length>=MAX_TOWERS){mn(`Tower limit reached (${MAX_TOWERS}/${MAX_TOWERS}).`,'dmg');return;}
   if(S.coins<d.cost){mn('Not enough coins!','dmg');return;}
   S.placing=true;
@@ -520,7 +563,7 @@ function towerSellValue(t){
 }
 
 function updateActionButtons(tower){
-  const canAct=!!tower && !!S && !gamePaused && S.phase==='prep' && !S.over;
+  const canAct=!!tower && !!S && !gamePaused && !S.over;
   const upgBtn=document.getElementById('upg-btn');
   const sellBtn=document.getElementById('sell-btn');
   const upgCost=document.getElementById('upg-cost');
@@ -578,7 +621,7 @@ function copyIP(){
 // ══════════════════════════════════════════
 function upgradeTower(){
   if(gamePaused){mn('Game paused. Resume to upgrade towers.','dmg');return;}
-  if(!S||S.phase!=='prep'){mn('Upgrades are available during prep only.','dmg');return;}
+  if(!S||S.over){mn('System not ready.','dmg');return;}
   const t=S.selTower;
   if(!t||!S.towers.includes(t)){mn('Select a tower first.','dmg');return;}
   const cost=towerUpgradeCost(t);
@@ -596,7 +639,7 @@ function upgradeTower(){
 
 function sellTower(){
   if(gamePaused){mn('Game paused. Resume to sell towers.','dmg');return;}
-  if(!S||S.phase!=='prep'){mn('Selling is available during prep only.','dmg');return;}
+  if(!S||S.over){mn('System not ready.','dmg');return;}
   const t=S.selTower;
   if(!t||!S.towers.includes(t)){mn('Select a tower first.','dmg');return;}
   const value=towerSellValue(t);
@@ -625,7 +668,7 @@ canvas.addEventListener('click',e=>{
   const r=canvas.getBoundingClientRect();
   const x=e.clientX-r.left,y=e.clientY-r.top;
   if(S.hover){S.selTower=S.hover;refreshSel(S.hover);return;}
-  if(!S.placing||S.phase!=='prep')return;
+  if(!S.placing)return;
   if(S.towers.length>=MAX_TOWERS){mn(`Tower limit reached (${MAX_TOWERS}/${MAX_TOWERS}).`,'dmg');S.placing=false;banner();return;}
   if(onPath(x,y)){mn('Cannot place on path!','dmg');return;}
   const d=TDEFS[S.selType];
@@ -744,7 +787,7 @@ function updHP(){
 function banner(){
   const el=document.getElementById('phase-banner');
   el.classList.remove('paused');
-  if(S.placing&&S.phase==='prep'){
+  if(S.placing&&!S.over){
     const d=TDEFS[S.selType];
     el.textContent='CLICK MAP TO PLACE '+d.lbl;
     return;
@@ -779,17 +822,14 @@ function checkUnlocks(){
 }
 
 function buildWave(w){
-  const cnt=4+w*2,arr=[];
-  for(let i=0;i<cnt;i++){
-    const boss=w>=4&&i===cnt-1;
-    let pd;
-    if(boss){
-      pd=PDEFS[7];
-    }else{
-      const avail=Math.min(w,7);
-      pd=PDEFS[i%avail];
-    }
-    const hp=pd.hp*(1+w*.18);
+  const idx=Math.max(0,Math.min(MAX_WAVE,w)-1);
+  const bp=WAVE_BLUEPRINTS[idx]||WAVE_BLUEPRINTS[WAVE_BLUEPRINTS.length-1];
+  S.spawnIv=bp.spawn;
+  const arr=[];
+  for(let i=0;i<bp.count;i++){
+    const pd=PDEFS_BY_NAME[bp.types[i%bp.types.length]];
+    const mix=1+(i/Math.max(1,bp.count-1))*0.08;
+    const hp=Math.max(1,Math.round(pd.hp*bp.hp*mix));
     arr.push({...pd,hp,maxhp:hp,delay:i*S.spawnIv,spawned:false});
   }
   return arr;
@@ -798,23 +838,15 @@ function spawnP(def){
   const p=S.path;
   return{
     n:def.n,l:def.l,hp:def.hp,mhp:def.maxhp,spd:def.spd,col:def.col,icon:def.icon,
-    boss:def.boss||false,effect:def.effect||'none',
-    pi:0,t:0,x:p[0].x,y:p[0].y,dead:false,id:Math.random(),
-    bossLayer:def.l,bossShiftTimer:4
+    effect:def.effect||'none',
+    pi:0,t:0,x:p[0].x,y:p[0].y,dead:false,id:Math.random()
   };
 }
 function movePkts(dt){
   for(const p of S.packets){
-    if(p.boss){
-      p.bossShiftTimer-=dt;
-      if(p.bossShiftTimer<=0){
-        p.l=Math.ceil(Math.random()*7);
-        p.col=LCOL[p.l]||'#ff2244';
-        p.bossShiftTimer=3+Math.random()*2;
-      }
-    }
     if(p.pi>=S.path.length-1){
-      const dmg=Math.max(5,Math.round((p.boss?28:p.effect==='heavydmg'?18:10)*(p.hp/p.mhp)+5));
+      const breachPower=[0,10,11,12,13,14,16,18][p.l]||10;
+      const dmg=Math.max(5,Math.round(breachPower*(p.hp/p.mhp)+5));
       S.hp=Math.max(0,S.hp-dmg);
       mn(`${p.n} breached! -${dmg}%`,'dmg');
       addSN('red','✉️',p.n+' breached!',`-${dmg}% Server Integrity`);
@@ -855,7 +887,7 @@ function attackPkts(dt){
       t.weakened=4;
     }
     if(tgt.hp<=0){
-      tgt.dead=true;S.coins+=tgt.boss?60:12;updCoins();
+      tgt.dead=true;S.coins+=12;updCoins();
       addSN('grn','✅',t.def.lbl+' blocked!',tgt.n+' eliminated');
     }
   }
@@ -975,7 +1007,7 @@ function draw(){
   }
 
   // PLACEMENT GHOST
-  if(S.placing&&S.phase==='prep'){
+  if(S.placing&&!S.over){
     const d=TDEFS[S.selType];
     const bad=onPath(S.mx,S.my);
     ctx.globalAlpha=.5;
@@ -987,12 +1019,12 @@ function draw(){
 
   // ENEMY PACKETS
   for(const p of S.packets){
-    const r=p.boss?18:12;
-    if(p.boss){ctx.save();ctx.shadowColor='#ff2244';ctx.shadowBlur=20;}
-    ctx.fillStyle=p.col+'44';ctx.strokeStyle=p.col;ctx.lineWidth=p.boss?2.5:1.5;
+    const r=p.l>=6?13:12;
+    if(p.l>=6){ctx.save();ctx.shadowColor='#ff2244';ctx.shadowBlur=12;}
+    ctx.fillStyle=p.col+'44';ctx.strokeStyle=p.col;ctx.lineWidth=p.l>=6?2:1.5;
     ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fill();ctx.stroke();
-    if(p.boss)ctx.restore();
-    ctx.font=`${p.boss?16:13}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    if(p.l>=6)ctx.restore();
+    ctx.font=`${p.l>=6?15:13}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(p.icon,p.x,p.y);
     // hp bar
     const bw2=r*2+8;
@@ -1087,7 +1119,7 @@ function endGame(win){
   setPaused(false,true);
   S.over=true;
   const ov=document.getElementById('overlay');
-  ov.innerHTML=`<div class="ov-box"><div class="ov-logo" style="color:${win?'#00ff80':'#ff2244'}">${win?'✓ SECURED':'✗ BREACHED'}</div><div class="ov-sub">${win?'NETWORK DEFENDED':'SERVER COMPROMISED'}</div><div class="ov-desc">${win?'All 7 OSI waves defeated!<br>Network fully secured.':'The main server was compromised.<br>Try again!'}<br><br><span style="font-family:Share Tech Mono,monospace;font-size:11px;color:#4a7aaa">Operator: ${escapeHtml(displayNickname(playerName))}<br>Wave: ${S.wave}/${MAX_WAVE} | Towers: ${S.towers.length} | Integrity: ${Math.max(0,S.hp)}%</span></div><button class="ov-btn" onclick="restartGame()">↺ REBOOT SYSTEM</button></div>`;
+  ov.innerHTML=`<div class="ov-box"><div class="ov-logo" style="color:${win?'#00ff80':'#ff2244'}">${win?'✓ SECURED':'✗ BREACHED'}</div><div class="ov-sub">${win?'NETWORK DEFENDED':'SERVER COMPROMISED'}</div><div class="ov-desc">${win?'All 10 OSI waves defeated!<br>Network fully secured.':'The main server was compromised.<br>Try again!'}<br><br><span style="font-family:Share Tech Mono,monospace;font-size:11px;color:#4a7aaa">Operator: ${escapeHtml(displayNickname(playerName))}<br>Wave: ${S.wave}/${MAX_WAVE} | Towers: ${S.towers.length} | Integrity: ${Math.max(0,S.hp)}%</span></div><button class="ov-btn" onclick="restartGame()">↺ REBOOT SYSTEM</button></div>`;
   ov.style.display='flex';
 }
 
@@ -1139,4 +1171,5 @@ window.copyIP=copyIP;window.upgradeTower=upgradeTower;window.sellTower=sellTower
 window.toggleMenu=toggleMenu;window.toggleLogFocus=toggleLogFocus;window.restartGame=restartGame;window.resumeFromMenu=resumeFromMenu;window.closeMenu=closeMenu;
 window.openHowToPlay=openHowToPlay;window.closeHowToPlay=closeHowToPlay;window.showHowToPlay=openHowToPlay;
 wireTopbarActions();
+renderEnemyRoster();
 renderLoginOverlay(safeGetStoredName());
