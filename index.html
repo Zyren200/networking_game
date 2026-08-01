@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>TowerNet: Packet-Protocol</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -124,6 +125,10 @@
 <!-- ── MAP ── -->
 <div id="mapwrap">
   <canvas id="canvas"></canvas>
+  <div id="mobile-panel-tabs" aria-label="Mobile panels">
+    <button type="button" onclick="toggleMobilePanel('left')">PACKETS</button>
+    <button type="button" onclick="toggleMobilePanel('right')">SERVER</button>
+  </div>
   <div id="phase-banner">PREP PHASE</div>
   <div id="map-notifs"></div>
   <div id="wave-done">
@@ -139,44 +144,49 @@
   <div class="p-sec tower-sec">
       <div class="p-title">TOWER PANEL</div>
       <div class="tcard-row">
-        <div class="tcard sel" id="tc-IDS" onclick="selType('IDS')">
+        <div class="tcard sel" id="tc-CableShield" onclick="selType('CableShield')">
+          <div class="tc-art l1-art">🔌</div>
+          <div class="tc-name">CABLE SHIELD</div><div class="tc-lyr">LAYER 1</div>
+          <div class="tc-cost" id="tc-cost-CableShield">COST 50</div>
+        </div>
+        <div class="tcard" id="tc-IDS" onclick="selType('IDS')">
           <div class="tc-art ids-art">🔭</div>
           <div class="tc-name">IDS</div><div class="tc-lyr">LAYER 2</div>
-          <div class="tc-cost" id="tc-cost-IDS">COST 50</div>
+          <div class="tc-cost" id="tc-cost-IDS">COST 75</div>
         </div>
         <div class="tcard" id="tc-Router" onclick="selType('Router')">
           <div class="tc-art rtr-art">🔀</div>
           <div class="tc-name">ROUTER</div><div class="tc-lyr">LAYER 3</div>
-          <div class="tc-cost" id="tc-cost-Router">COST 75</div>
+          <div class="tc-cost" id="tc-cost-Router">COST 100</div>
         </div>
-        <div class="tcard" id="tc-Firewall" onclick="selType('Firewall')">
+        <div class="tcard locked" id="tc-Firewall" onclick="selType('Firewall')">
           <div class="tc-art fw-art">🧱</div>
           <div class="tc-name">FIREWALL</div><div class="tc-lyr">LAYER 4</div>
-          <div class="tc-cost" id="tc-cost-Firewall">COST 100</div>
-        </div>
-        <div class="tcard" id="tc-Antivirus" onclick="selType('Antivirus')">
-          <div class="tc-art av-art">🛡️</div>
-          <div class="tc-name">ANTIVIRUS</div><div class="tc-lyr">LAYER 7</div>
-          <div class="tc-cost" id="tc-cost-Antivirus">COST 120</div>
+          <div class="tc-cost" id="tc-cost-Firewall">COST 125</div>
+          <div class="unlock-lbl">Unlocks at Level 4</div>
+          <span class="lock-badge">🔒</span>
         </div>
       </div>
       <div class="tcard-row secondary" style="margin-top:5px">
-        <div class="tcard locked" id="tc-CableShield" onclick="selType('CableShield')">
-          <div class="tc-art l1-art">🔌</div>
-          <div class="tc-name">CABLE SHIELD</div><div class="tc-lyr">LAYER 1</div>
-          <div class="tc-cost" id="tc-cost-CableShield">COST 80</div>
-          <span class="lock-badge">🔒</span>
-        </div>
         <div class="tcard locked" id="tc-SessionMonitor" onclick="selType('SessionMonitor')">
           <div class="tc-art l5-art">👁️</div>
           <div class="tc-name">SESSION MON.</div><div class="tc-lyr">LAYER 5</div>
-          <div class="tc-cost" id="tc-cost-SessionMonitor">COST 110</div>
+          <div class="tc-cost" id="tc-cost-SessionMonitor">COST 150</div>
+          <div class="unlock-lbl">Unlocks at Level 5</div>
           <span class="lock-badge">🔒</span>
         </div>
         <div class="tcard locked" id="tc-EncryptGateway" onclick="selType('EncryptGateway')">
           <div class="tc-art l6-art">🔑</div>
           <div class="tc-name">ENCRYPT GW</div><div class="tc-lyr">LAYER 6</div>
-          <div class="tc-cost" id="tc-cost-EncryptGateway">COST 130</div>
+          <div class="tc-cost" id="tc-cost-EncryptGateway">COST 175</div>
+          <div class="unlock-lbl">Unlocks at Level 6</div>
+          <span class="lock-badge">🔒</span>
+        </div>
+        <div class="tcard locked" id="tc-Antivirus" onclick="selType('Antivirus')">
+          <div class="tc-art av-art">🛡️</div>
+          <div class="tc-name">ANTIVIRUS</div><div class="tc-lyr">LAYER 7</div>
+          <div class="tc-cost" id="tc-cost-Antivirus">COST 200</div>
+          <div class="unlock-lbl">Unlocks at Level 7</div>
           <span class="lock-badge">🔒</span>
         </div>
       </div>
@@ -185,10 +195,10 @@
     <div class="p-sec tower-sec">
       <div class="p-title">SELECTED TOWER INFO</div>
       <div class="sti-wrap">
-        <div class="sti-art ids-art" id="sti-art">🔭</div>
+        <div class="sti-art l1-art" id="sti-art">🔌</div>
         <div class="sti-right">
-          <div class="sti-name" id="sti-name">IDS</div>
-          <div class="sti-sub" id="sti-sub">Intrusion Detection System<br>Layer 2 – Data Link Layer</div>
+          <div class="sti-name" id="sti-name">CABLE SHIELD</div>
+          <div class="sti-sub" id="sti-sub">Physical Layer Protection<br>Layer 1 – Physical Layer</div>
           <div class="sti-ip-lbl">IP ADDRESS</div>
           <div class="ip-copy-row">
             <div class="ip-box" id="sti-ip">—</div>
@@ -201,9 +211,9 @@
         </div>
       </div>
         <div class="sti-3stats" style="margin-top:8px">
-          <div class="sstat"><div class="sstat-l">BASE DAMAGE</div><div class="sstat-v" id="sti-dmg">20</div></div>
-          <div class="sstat"><div class="sstat-l">RANGE</div><div class="sstat-v" id="sti-range">3.0</div></div>
-          <div class="sstat"><div class="sstat-l">FIRE RATE</div><div class="sstat-v" id="sti-rate">1.2s</div></div>
+          <div class="sstat"><div class="sstat-l">BASE DAMAGE</div><div class="sstat-v" id="sti-dmg">15</div></div>
+          <div class="sstat"><div class="sstat-l">RANGE</div><div class="sstat-v" id="sti-range">2.7</div></div>
+          <div class="sstat"><div class="sstat-l">FIRE RATE</div><div class="sstat-v" id="sti-rate">0.8s</div></div>
         </div>
         <div class="tower-meta">
           <div class="meta-box"><div class="meta-l">LEVEL</div><div class="meta-v" id="meta-level">L1/3</div></div>

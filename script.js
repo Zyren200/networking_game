@@ -3,17 +3,17 @@
 // ══════════════════════════════════════════
 const MAX_WAVE = 10;
 const MAX_TOWERS = 10;
-const START_UNLOCKED = new Set(['IDS','Router','Firewall','Antivirus']);
-const UNLOCK_WAVE = {CableShield:3, SessionMonitor:4, EncryptGateway:5};
+const START_UNLOCKED = new Set(['CableShield','IDS','Router']);
+const UNLOCK_WAVE = {Firewall:4, SessionMonitor:5, EncryptGateway:6, Antivirus:7};
 const LCOL = {1:'#aaaaaa',2:'#4488ff',3:'#00cc55',4:'#ff8800',5:'#9b59b6',6:'#00cccc',7:'#ff3355'};
 const TDEFS = {
-  CableShield:   {layer:1,cost:80, dmg:15, range:80, rate:0.8,icon:'🔌',artCls:'l1-art',col:LCOL[1],lbl:'CABLE SHIELD',   sub:'Physical Layer Protection\nLayer 1 – Physical Layer',    locked:true},
-  IDS:           {layer:2,cost:50, dmg:20, range:90, rate:1.2,icon:'🔭',artCls:'ids-art',col:LCOL[2],lbl:'IDS',            sub:'Intrusion Detection System\nLayer 2 – Data Link Layer',  locked:false},
-  Router:        {layer:3,cost:75, dmg:35, range:110,rate:1.0,icon:'🔀',artCls:'rtr-art',col:LCOL[3],lbl:'ROUTER',         sub:'Packet Routing System\nLayer 3 – Network Layer',         locked:false},
-  Firewall:      {layer:4,cost:100,dmg:60, range:95, rate:1.5,icon:'🧱',artCls:'fw-art', col:LCOL[4],lbl:'FIREWALL',       sub:'Traffic Filtering System\nLayer 4 – Transport Layer',    locked:false},
-  SessionMonitor:{layer:5,cost:110,dmg:45, range:100,rate:1.3,icon:'👁️',artCls:'l5-art',col:LCOL[5],lbl:'SESSION MON.',   sub:'Session Hijack Detection\nLayer 5 – Session Layer',      locked:true},
-  EncryptGateway:{layer:6,cost:130,dmg:55, range:88, rate:1.6,icon:'🔑',artCls:'l6-art',col:LCOL[6],lbl:'ENCRYPT GW',     sub:'Encryption Gateway\nLayer 6 – Presentation Layer',      locked:true},
-  Antivirus:     {layer:7,cost:120,dmg:90, range:75, rate:2.0,icon:'🛡️',artCls:'av-art', col:LCOL[7],lbl:'ANTIVIRUS',      sub:'Malware Detection Engine\nLayer 7 – Application Layer',  locked:false}
+  CableShield:   {layer:1,cost:50, dmg:15, range:80, rate:0.8,icon:'🔌',artCls:'l1-art',col:LCOL[1],lbl:'CABLE SHIELD',   sub:'Physical Layer Protection\nLayer 1 – Physical Layer',    locked:false},
+  IDS:           {layer:2,cost:75, dmg:20, range:90, rate:1.2,icon:'🔭',artCls:'ids-art',col:LCOL[2],lbl:'IDS',            sub:'Intrusion Detection System\nLayer 2 – Data Link Layer',  locked:false},
+  Router:        {layer:3,cost:100,dmg:35, range:110,rate:1.0,icon:'🔀',artCls:'rtr-art',col:LCOL[3],lbl:'ROUTER',         sub:'Packet Routing System\nLayer 3 – Network Layer',         locked:false},
+  Firewall:      {layer:4,cost:125,dmg:60, range:95, rate:1.5,icon:'🧱',artCls:'fw-art', col:LCOL[4],lbl:'FIREWALL',       sub:'Traffic Filtering System\nLayer 4 – Transport Layer',    locked:true},
+  SessionMonitor:{layer:5,cost:150,dmg:45, range:100,rate:1.3,icon:'👁️',artCls:'l5-art',col:LCOL[5],lbl:'SESSION MON.',   sub:'Session Hijack Detection\nLayer 5 – Session Layer',      locked:true},
+  EncryptGateway:{layer:6,cost:175,dmg:55, range:88, rate:1.6,icon:'🔑',artCls:'l6-art',col:LCOL[6],lbl:'ENCRYPT GW',     sub:'Encryption Gateway\nLayer 6 – Presentation Layer',      locked:true},
+  Antivirus:     {layer:7,cost:200,dmg:90, range:75, rate:2.0,icon:'🛡️',artCls:'av-art', col:LCOL[7],lbl:'ANTIVIRUS',      sub:'Malware Detection Engine\nLayer 7 – Application Layer',  locked:true}
 };
 const PDEFS = [
   {n:'Physical',           l:1,hp:40, spd:1.2,col:LCOL[1],icon:'📡',effect:'slow'},
@@ -52,7 +52,7 @@ function fresh(){
     phase:'prep',wave:1,timer:30,
     coins:200,hp:100,
     towers:[],packets:[],
-    selType:'IDS',selTower:null,
+    selType:'CableShield',selTower:null,
     placing:false,
     mx:0,my:0,hover:null,
     over:false,
@@ -406,6 +406,12 @@ function toggleLogFocus(){
   }
 }
 
+function toggleMobilePanel(side){
+  const left=side==='left';
+  document.body.classList.toggle('mobile-left-open',left&&!document.body.classList.contains('mobile-left-open'));
+  document.body.classList.toggle('mobile-right-open',!left&&!document.body.classList.contains('mobile-right-open'));
+}
+
 function setPaused(next,force=false){
   if(!force&&(!S||S.over))return gamePaused;
   if(gamePaused===next){
@@ -656,22 +662,31 @@ function sellTower(){
 
 //  CANVAS EVENTS
 // ══════════════════════════════════════════
-canvas.addEventListener('mousemove',e=>{
-  if(!S||S.over||gamePaused)return;
+function canvasPoint(e){
   const r=canvas.getBoundingClientRect();
-  S.mx=e.clientX-r.left;S.my=e.clientY-r.top;
-  S.hover=S.towers.find(t=>dst(t.x,t.y,S.mx,S.my)<22)||null;
+  return{x:e.clientX-r.left,y:e.clientY-r.top};
+}
+function updateCanvasHover(x,y){
+  S.mx=x;S.my=y;
+  S.hover=S.towers.find(t=>dst(t.x,t.y,x,y)<22)||null;
   if(S.hover){refreshSel(S.hover);S.selTower=S.hover;}
-});
-canvas.addEventListener('click',e=>{
+}
+canvas.addEventListener('pointermove',e=>{
   if(!S||S.over||gamePaused)return;
-  const r=canvas.getBoundingClientRect();
-  const x=e.clientX-r.left,y=e.clientY-r.top;
+  const p=canvasPoint(e);
+  updateCanvasHover(p.x,p.y);
+});
+canvas.addEventListener('pointerdown',e=>{
+  if(!S||S.over||gamePaused)return;
+  e.preventDefault();
+  const {x,y}=canvasPoint(e);
+  updateCanvasHover(x,y);
   if(S.hover){S.selTower=S.hover;refreshSel(S.hover);return;}
   if(!S.placing)return;
   if(S.towers.length>=MAX_TOWERS){mn(`Tower limit reached (${MAX_TOWERS}/${MAX_TOWERS}).`,'dmg');S.placing=false;banner();return;}
   if(onPath(x,y)){mn('Cannot place on path!','dmg');return;}
   const d=TDEFS[S.selType];
+  if(d?.locked){mn('🔒 Not unlocked!','dmg');S.placing=false;banner();return;}
   if(S.coins<d.cost){mn('Not enough coins!','dmg');return;}
   S.coins-=d.cost;
   const t={x,y,def:d,ip:'192.168.1.'+ipSeq++,online:false,cd:0,lhit:null,id:Math.random(),level:1,baseCost:d.cost,invested:d.cost,disabled:0,weakened:0};
@@ -1158,7 +1173,7 @@ function startGame(){
   document.getElementById('tb-timer').textContent='00:30';
   document.getElementById('tcount').textContent='0';
   document.getElementById('rprog').style.strokeDashoffset=0;
-  selType('IDS');banner();
+  selType('CableShield');banner();
   syncPlayerBadge();
   document.title=`TowerNet: ${displayNickname(playerName)} | Packet-Protocol`;
   if(raf)cancelAnimationFrame(raf);
@@ -1167,7 +1182,7 @@ function startGame(){
 }
 window.addEventListener('resize',()=>{if(S){const b=document.getElementById('pkt-bar').offsetHeight;canvas.width=mw.clientWidth;canvas.height=mw.clientHeight;makePath(b);}});
 window.selType=selType;window.activatePlace=activatePlace;window.doConnect=doConnect;
-window.copyIP=copyIP;window.upgradeTower=upgradeTower;window.sellTower=sellTower;window.startGame=startGame;window.doNextWave=doNextWave;window.togglePause=togglePause;
+window.copyIP=copyIP;window.upgradeTower=upgradeTower;window.sellTower=sellTower;window.startGame=startGame;window.doNextWave=doNextWave;window.togglePause=togglePause;window.toggleMobilePanel=toggleMobilePanel;
 window.toggleMenu=toggleMenu;window.toggleLogFocus=toggleLogFocus;window.restartGame=restartGame;window.resumeFromMenu=resumeFromMenu;window.closeMenu=closeMenu;
 window.openHowToPlay=openHowToPlay;window.closeHowToPlay=closeHowToPlay;window.showHowToPlay=openHowToPlay;
 wireTopbarActions();
