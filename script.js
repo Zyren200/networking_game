@@ -313,10 +313,17 @@ function packetNote(pkt){
   }[pkt.n]||'';
 }
 
-function renderEnemyRoster(){
+function packetsForWave(wave){
+  const idx=Math.max(0,Math.min(MAX_WAVE,wave||1)-1);
+  const bp=WAVE_BLUEPRINTS[idx]||WAVE_BLUEPRINTS[0];
+  const names=[...new Set(bp.types)];
+  return names.map(name=>PDEFS_BY_NAME[name]).filter(Boolean);
+}
+
+function renderEnemyRoster(wave=S?.wave||1){
   const list=document.querySelector('.enemy-list');
   if(!list)return;
-  list.innerHTML=PDEFS.map(pkt=>`
+  list.innerHTML=packetsForWave(wave).map(pkt=>`
       <div class="pkt-card">
         <span class="pkt-art">${pkt.icon}</span>
         <div class="pkt-name" style="color:${pkt.col}">${pkt.n.toUpperCase()}</div>
@@ -669,7 +676,6 @@ function canvasPoint(e){
 function updateCanvasHover(x,y){
   S.mx=x;S.my=y;
   S.hover=S.towers.find(t=>dst(t.x,t.y,x,y)<22)||null;
-  if(S.hover){refreshSel(S.hover);S.selTower=S.hover;}
 }
 canvas.addEventListener('pointermove',e=>{
   if(!S||S.over||gamePaused)return;
@@ -1124,6 +1130,7 @@ function doNextWave(){
   setPaused(false,true);
   S.wave++;S.phase='prep';S.timer=28;S.wdone=false;
   document.getElementById('tb-wave').textContent=S.wave+' / '+MAX_WAVE;
+  renderEnemyRoster(S.wave);
   checkUnlocks();
   banner();addSN('grn','🔔','Prep Phase','Configure towers for Wave '+S.wave);
 }
@@ -1173,6 +1180,7 @@ function startGame(){
   document.getElementById('tb-timer').textContent='00:30';
   document.getElementById('tcount').textContent='0';
   document.getElementById('rprog').style.strokeDashoffset=0;
+  renderEnemyRoster(S.wave);
   selType('CableShield');banner();
   syncPlayerBadge();
   document.title=`TowerNet: ${displayNickname(playerName)} | Packet-Protocol`;
